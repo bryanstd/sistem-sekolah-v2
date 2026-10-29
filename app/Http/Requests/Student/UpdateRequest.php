@@ -22,12 +22,27 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $studentId = $this->route('student')?->id ?? $this->student?->id;
+
         return [
-            'nis'=> ['required', 'string', 'size:4', 'unique:students,nis,' . $this->student->id],
-            'name'=> ['required', 'string'],
-            'gender'=> ['required', 'string', 'in:Laki-laki,Perempuan'],
-            'major' =>['required', 'string', 'in:AKL,TKJ,BiD'],
-            'class'=> ['required', 'string']
+            'nis' => ['required', 'string', 'size:4', 'unique:students,nis,' . $studentId],
+            'name' => ['required', 'string'],
+            'gender' => ['required', 'string', 'in:Laki-laki,Perempuan'],
+            'major_id' => ['required', 'exists:majors,id'],
+            'class_id' => ['required', 'exists:school_classes,id'],
+            'user_id' => ['nullable', 'exists:users,id'],
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'nis' => 'Nomor Induk Siswa',
+            'name' => 'Nama Lengkap',
+            'gender' => 'Jenis Kelamin',
+            'class_id' => 'Kelas',
+            'major_id' => 'Jurusan',
+            'user_id' => 'Pengguna',
         ];
     }
 }

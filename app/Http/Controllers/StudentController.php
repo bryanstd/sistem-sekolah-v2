@@ -1,43 +1,45 @@
 <?php
- 
+
 namespace App\Http\Controllers;
- 
+
 use App\Http\Requests\Student\StoreRequest;
 use App\Http\Requests\Student\UpdateRequest;
+use App\Models\Major;
+use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\Request;
- 
+
 class StudentController extends Controller
 {
     public function index(Request $request)
     {
-    $title ='Sistem Sekolah - Daftar Siswa';
+        $title = 'Sistem Sekolah - Daftar Siswa';
 
-    $search = $request->input('search');
-    $class = $request->query('class');
-    $major = $request->query('major');
+        $search = $request->input('search');
+        $classId = $request->query('class_id');
+        $majorId = $request->query('major_id');
 
-    $students = Student::select(['id', 'nis', 'name', 'class', 'major'])
-    ->when($search, function ($query, $search) {
-        $query->where(function ($query) use ($search) {
-            $query->where('name', 'like', "%{$search}%")
-             ->orWhere('nis', 'like', "%{$search}%");
-        });
-    })
-    ->when($class, fn($query, $class) => $query->where('class', '=', $class))
-    ->when($major, fn($query, $major) => $query->where('major', '=', $major))
-    ->paginate(5)
-    ->withQueryString();
+        $students = Student::with(['schoolClass', 'major'])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('nis', 'like', "%{$search}%");
+                });
+            })
+            ->when($classId, fn ($query, $classId) => $query->where('class_id', $classId))
+            ->when($majorId, fn ($query, $majorId) => $query->where('major_id', $majorId))
+            ->paginate(5)
+            ->withQueryString();
 
-    $schoolClasses = ['10 AKL', '11 AKL', '11 TKJ 1', '11 TKJ 2', '10 BiD', '12 TKJ 1', '12 TKJ 2', '12 TKJ 3'];
-    $majors = ['AKL', 'BiD', 'TKJ'];
+        $schoolClasses = SchoolClass::orderBy('name')->get();
+        $majors = Major::orderBy('name')->get();
 
-    return view('students.index', [
-        'title'=> $title,
-        'students'=> $students,
-        'schoolClasses'=> $schoolClasses,
-        'majors'=> $majors
-    ]);
+        return view('students.index', [
+            'title' => $title,
+            'students' => $students,
+            'schoolClasses' => $schoolClasses,
+            'majors' => $majors,
+        ]);
     }
  
     public function show(Student $student)
@@ -52,19 +54,30 @@ class StudentController extends Controller
    
     public function create()
     {
-         $title ='Sistem Sekolah - Membuat Daftar Siswa';
+        $title = 'Sistem Sekolah - Membuat Daftar Siswa';
+
+        $schoolClasses = SchoolClass::orderBy('name')->get();
+        $majors = Major::orderBy('name')->get();
+
         return view('students.create', [
-            'title' => $title
+            'title' => $title,
+            'schoolClasses' => $schoolClasses,
+            'majors' => $majors,
         ]);
     }
- 
+
     public function edit(Student $student)
     {
-         $title ='Sistem Sekolah - Mengubah Daftar Siswa';
+        $title = 'Sistem Sekolah - Mengubah Daftar Siswa';
+
+        $schoolClasses = SchoolClass::orderBy('name')->get();
+        $majors = Major::orderBy('name')->get();
 
         return view('students.edit', [
             'title' => $title,
-            'student' => $student
+            'student' => $student,
+            'schoolClasses' => $schoolClasses,
+            'majors' => $majors,
         ]);
     }
  

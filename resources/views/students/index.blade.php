@@ -36,20 +36,20 @@
     </div>
 
     <div>
-        <label for="class"
+        <label for="class_id"
             class="mb-2 block text-[11px] uppercase tracking-[0.15em] text-[#16213A]">
             Kelas
         </label>
 
-        <select name="class" id="class"
+        <select name="class_id" id="class_id"
             class="w-full border border-[#E5E3DB] px-3 py-2 text-sm focus:border-[#16213A] focus:outline-none">
 
             <option value="">Semua Kelas</option>
 
-            @foreach ($schoolClasses as $class)
-                <option value="{{ $class }}"
-                    @selected(request('class') === $class)>
-                    {{ $class }}
+            @foreach ($schoolClasses as $schoolClass)
+                <option value="{{ $schoolClass->id }}"
+                    @selected(request('class_id') == $schoolClass->id)>
+                    {{ $schoolClass->name }}
                 </option>
             @endforeach
 
@@ -57,20 +57,20 @@
     </div>
 
     <div>
-        <label for="major"
+        <label for="major_id"
             class="mb-2 block text-[11px] uppercase tracking-[0.15em] text-[#16213A]">
             Jurusan
         </label>
 
-        <select name="major" id="major"
+        <select name="major_id" id="major_id"
             class="w-full border border-[#E5E3DB] px-3 py-2 text-sm focus:border-[#16213A] focus:outline-none">
 
             <option value="">Semua Jurusan</option>
 
             @foreach ($majors as $major)
-                <option value="{{ $major }}"
-                    @selected(request('major') === $major)>
-                    {{ $major }}
+                <option value="{{ $major->id }}"
+                    @selected(request('major_id') == $major->id)>
+                    {{ $major->name }}
                 </option>
             @endforeach
 
@@ -114,11 +114,11 @@
                     </td>
 
                     <td class="px-5 py-4">
-                        {{ $student->class }}
+                        {{ $student->schoolClass?->name }}
                     </td>
 
                     <td class="px-5 py-4">
-                        {{ $student->major }}
+                        {{ $student->major?->name }}
                     </td>
 
                     <td class="px-5 py-4">
